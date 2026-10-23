@@ -18,12 +18,12 @@ const CONFIG = {
     // Skopiuj te dane z konsoli Firebase (https://console.firebase.google.com):
     // Projekt -> Ustawienia projektu -> Twoje aplikacje (Web)
     FIREBASE: {
-        apiKey: "TWOJE_API_KEY",
-        authDomain: "twoj-projekt.firebaseapp.com",
-        projectId: "twoj-projekt",
-        storageBucket: "twoj-projekt.firebasestorage.app",
-        messagingSenderId: "1234567890",
-        appId: "1:1234567890:web:abcdef123456"
+        apiKey: "AIzaSyAUOznjjzTi8K5Z3wyrgZ5zhMWHG3mvKtQ",
+        authDomain: "emsweb-8e95a.firebaseapp.com",
+        projectId: "emsweb-8e95a",
+        storageBucket: "emsweb-8e95a.firebasestorage.app",
+        messagingSenderId: "883420755776",
+        appId: "1:883420755776:web:a20747df364830a9e62ca5"
     },
 
     // ----------------------------------------------------
