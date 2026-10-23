@@ -7,8 +7,54 @@
     <title>Formularz Podania – EMS Panel</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <style>
+        /* Rating scale (1-10) */
+        .rating-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .rating-group input[type="radio"] { display: none; }
+        .rating-group label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            user-select: none;
+        }
+        .rating-group input[type="radio"]:checked + label,
+        .rating-group label:hover {
+            border-color: var(--red);
+            background: var(--red-dim);
+            color: var(--red);
+        }
+
+        /* Radio buttons (Tak/Nie/Inne) */
+        .radio-group { display: flex; flex-direction: column; gap: 10px; }
+        .radio-item { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .radio-item input[type="radio"] {
+            width: 16px; height: 16px;
+            accent-color: var(--red);
+            cursor: pointer;
+        }
+        .radio-item label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+        #criminal_other_field { margin-top: 8px; display: none; }
+    </style>
 </head>
 
 <body>
@@ -16,7 +62,7 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="index.html" class="nav-brand">
-                <img src="https://cdn.discordapp.com/attachments/1562865685892300807/1563229746907582514/fe893a14-58b1-4fd5-a384-e473c31a2f30.png?ex=6adcdea7&is=6adb8d27&hm=33d013d265277b126371acc8de5268392aa396c3f26413c2d23929b20d987191&" alt="EMS Logo" class="nav-logo" onerror="this.src='https://dummyimage.com/100x100/e74c3c/ffffff&text=EMS'">
+                <img src="https://cdn.discordapp.com/attachments/1562865685892300807/1563229746907582514/fe893a14-58b1-4fd5-a384-e473c31a2f30.png?ex=6adcdea7&is=6adb8d27&hm=33d013d265277b126371acc8de5268392aa396c3f26413c2d23929b20d987191&" alt="EMS Logo" class="nav-logo" onerror="this.style.display='none'">
                 <span>EMS Panel</span>
                 <span class="nav-badge">Rekrutacja</span>
             </a>
@@ -25,23 +71,21 @@
                 <li><a href="podanie.html" class="nav-link active">Złóż Podanie</a></li>
                 <li><a href="status.html" class="nav-link">Status Podania</a></li>
             </ul>
-            <div id="nav-user-container">
-                <!-- Wstrzykiwane przez auth.js -->
-            </div>
+            <div id="nav-user-container"></div>
         </div>
     </nav>
 
-    <!-- Main Content -->
     <main class="main-container">
+
         <!-- Widok dla niezalogowanych -->
-        <div id="unauthorized-view" class="glass-card text-center" style="display: none; text-align: center; padding: 60px 20px;">
-            <div style="font-size: 3rem; margin-bottom: 16px;">🔒</div>
-            <h2 style="font-size: 1.8rem; margin-bottom: 12px;">Wymagane logowanie Discord</h2>
-            <p style="color: var(--text-muted); max-width: 500px; margin: 0 auto 30px;">
-                Aby złożyć formularz rekrutacyjny, musisz najpierw połączyć swoje konto Discord. Dzięki temu Zarząd będzie mógł bezpośrednio zweryfikować Twój profil i powiadomić Cię o wyniku.
+        <div id="unauthorized-view" class="glass-card" style="display:none; text-align:center; padding:60px 20px;">
+            <div style="font-size:2.5rem; margin-bottom:16px;">🔒</div>
+            <h2 style="font-size:1.4rem; font-weight:600; margin-bottom:10px;">Wymagane logowanie</h2>
+            <p style="color:var(--text-muted); max-width:480px; margin:0 auto 28px; font-size:0.9rem;">
+                Aby złożyć formularz rekrutacyjny, musisz połączyć swoje konto Discord. Dzięki temu Dyrekcja będzie mogła zweryfikować Twój profil i poinformować Cię o wyniku.
             </p>
             <button class="btn btn-discord btn-large" onclick="Auth.login()">
-                <svg width="22" height="18" viewBox="0 0 127.14 96.36" fill="currentColor">
+                <svg width="20" height="16" viewBox="0 0 127.14 96.36" fill="currentColor">
                     <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.86,53,48.83,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/>
                 </svg>
                 Zaloguj przez Discord
@@ -49,128 +93,188 @@
         </div>
 
         <!-- Formularz dla zalogowanych -->
-        <div id="application-form-container" class="glass-card" style="display: none;">
+        <div id="application-form-container" class="glass-card" style="display:none;">
             <div class="form-header">
-                <h2>📝 Formularz Aplikacyjny do EMS</h2>
-                <p>Wypełnij rzetelnie wszystkie poniższe pola. Treściwe i dokładne podania mają największą szansę na pozytywne rozpatrzenie.</p>
+                <h2>Formularz Aplikacyjny – EMS</h2>
+                <p>Wypełnij rzetelnie wszystkie pola. Treściwe odpowiedzi zwiększają szansę na pozytywne rozpatrzenie.</p>
             </div>
 
-            <!-- Podgląd konta Discord -->
+            <!-- Banner Discord -->
             <div class="alert alert-info" id="user-info-banner">
-                <img id="candidate-avatar" src="" alt="Avatar" style="width: 38px; height: 38px; border-radius: 50%;">
-                <div>
-                    Aplikujesz jako: <strong id="candidate-name"></strong> (Discord ID: <code id="candidate-id" style="background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px;"></code>)
+                <img id="candidate-avatar" src="" alt="Avatar" style="width:32px;height:32px;border-radius:50%;flex-shrink:0;">
+                <div style="font-size:0.875rem;">
+                    Aplikujesz jako: <strong id="candidate-name"></strong>
+                    <span style="color:var(--text-dim)"> · ID: <code id="candidate-id" style="background:rgba(0,0,0,0.3);padding:1px 5px;border-radius:3px;font-size:0.8rem;"></code></span>
                 </div>
             </div>
 
             <form id="recruitment-form">
-                <!-- SEKCJA 1: OOC -->
+
+                <!-- ======================== SEKCJA OOC ======================== -->
                 <div class="form-section">
                     <div class="section-legend">
                         <span class="legend-num">1</span>
-                        <span>Informacje Out Of Character (OOC)</span>
+                        <span>Sekcja OOC</span>
                     </div>
                     <div class="form-grid">
+
                         <div class="form-group">
-                            <label class="form-label" for="ooc_name">Twoje Imię <span class="req">*</span></label>
-                            <input type="text" id="ooc_name" class="form-input" placeholder="np. Maciej" required>
+                            <label class="form-label" for="ooc_discord_name">Nazwa Discord <span class="req">*</span></label>
+                            <input type="text" id="ooc_discord_name" class="form-input" placeholder="np. maciex#0001" required>
                         </div>
+
                         <div class="form-group">
-                            <label class="form-label" for="ooc_age">Wiek OOC <span class="req">*</span></label>
-                            <input type="number" id="ooc_age" class="form-input" placeholder="np. 17" min="14" max="99" required>
-                            <span class="form-hint">Wymagane minimum 15 lat (lub ukończone w najbliższym czasie).</span>
+                            <label class="form-label" for="ooc_discord_id">Discord ID <span class="req">*</span></label>
+                            <input type="text" id="ooc_discord_id" class="form-input" placeholder="np. 123456789012345678" required>
                         </div>
+
                         <div class="form-group">
-                            <label class="form-label" for="ooc_mic">Mikrofon i mutacja <span class="req">*</span></label>
-                            <select id="ooc_mic" class="form-select" required>
-                                <option value="" disabled selected>Wybierz status...</option>
-                                <option value="Tak, w pełni sprawny mikrofon i mutacja">Tak, sprawny mikrofon i pełna mutacja</option>
-                                <option value="Mikrofon sprawny, mutacja w trakcie">Mikrofon sprawny, mutacja w trakcie</option>
-                                <option value="Brak mutacji / problemy ze sprzętem">Brak mutacji / słaby sprzęt</option>
-                            </select>
+                            <label class="form-label" for="ooc_age">Ile masz lat? <span class="req">*</span></label>
+                            <input type="number" id="ooc_age" class="form-input" placeholder="np. 18" min="13" max="99" required>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label" for="ooc_time">Dostępność czasowa tygodniowo <span class="req">*</span></label>
-                            <input type="text" id="ooc_time" class="form-input" placeholder="np. 15-20 godzin" required>
-                        </div>
+
                         <div class="form-group full-width">
-                            <label class="form-label" for="ooc_about">Napisz coś o sobie <span class="req">*</span></label>
-                            <textarea id="ooc_about" class="form-textarea" placeholder="Opisz swoje zainteresowania, czym się zajmujesz, jaki masz charakter (min. 40 słów)..." minlength="40" required></textarea>
+                            <label class="form-label">Na ile oceniasz swoje umiejętności w role play? <span class="req">*</span></label>
+                            <div class="rating-group" id="rp_rating_group">
+                                <input type="radio" name="rp_rating" id="rp1" value="1"><label for="rp1">1</label>
+                                <input type="radio" name="rp_rating" id="rp2" value="2"><label for="rp2">2</label>
+                                <input type="radio" name="rp_rating" id="rp3" value="3"><label for="rp3">3</label>
+                                <input type="radio" name="rp_rating" id="rp4" value="4"><label for="rp4">4</label>
+                                <input type="radio" name="rp_rating" id="rp5" value="5"><label for="rp5">5</label>
+                                <input type="radio" name="rp_rating" id="rp6" value="6"><label for="rp6">6</label>
+                                <input type="radio" name="rp_rating" id="rp7" value="7"><label for="rp7">7</label>
+                                <input type="radio" name="rp_rating" id="rp8" value="8"><label for="rp8">8</label>
+                                <input type="radio" name="rp_rating" id="rp9" value="9"><label for="rp9">9</label>
+                                <input type="radio" name="rp_rating" id="rp10" value="10"><label for="rp10">10</label>
+                            </div>
                         </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Na ile oceniasz swoją wiedzę medyczną? <span class="req">*</span></label>
+                            <div class="rating-group" id="med_rating_group">
+                                <input type="radio" name="med_rating" id="med1" value="1"><label for="med1">1</label>
+                                <input type="radio" name="med_rating" id="med2" value="2"><label for="med2">2</label>
+                                <input type="radio" name="med_rating" id="med3" value="3"><label for="med3">3</label>
+                                <input type="radio" name="med_rating" id="med4" value="4"><label for="med4">4</label>
+                                <input type="radio" name="med_rating" id="med5" value="5"><label for="med5">5</label>
+                                <input type="radio" name="med_rating" id="med6" value="6"><label for="med6">6</label>
+                                <input type="radio" name="med_rating" id="med7" value="7"><label for="med7">7</label>
+                                <input type="radio" name="med_rating" id="med8" value="8"><label for="med8">8</label>
+                                <input type="radio" name="med_rating" id="med9" value="9"><label for="med9">9</label>
+                                <input type="radio" name="med_rating" id="med10" value="10"><label for="med10">10</label>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
-                <!-- SEKCJA 2: IC -->
+                <div class="divider"></div>
+
+                <!-- ======================== SEKCJA IC ======================== -->
                 <div class="form-section">
                     <div class="section-legend">
                         <span class="legend-num">2</span>
-                        <span>Dane Postaci In Character (IC)</span>
+                        <span>Sekcja IC</span>
                     </div>
                     <div class="form-grid">
+
                         <div class="form-group">
-                            <label class="form-label" for="ic_name">Imię i Nazwisko postaci <span class="req">*</span></label>
-                            <input type="text" id="ic_name" class="form-input" placeholder="np. John Kowalsky" required>
+                            <label class="form-label" for="ic_name">Imię i Nazwisko <span class="req">*</span></label>
+                            <input type="text" id="ic_name" class="form-input" placeholder="np. Jan Kowalski" required>
                         </div>
+
                         <div class="form-group">
-                            <label class="form-label" for="ic_age">Wiek postaci <span class="req">*</span></label>
-                            <input type="number" id="ic_age" class="form-input" placeholder="np. 28" min="18" max="75" required>
+                            <label class="form-label" for="ic_pn">PN <span class="req">*</span></label>
+                            <input type="text" id="ic_pn" class="form-input" placeholder="Numer personalny postaci" required>
                         </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="ic_dob">Data urodzenia <span class="req">*</span></label>
+                            <input type="date" id="ic_dob" class="form-input" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="ic_phone">Numer telefonu <span class="req">*</span></label>
+                            <input type="text" id="ic_phone" class="form-input" placeholder="np. 555-123-456" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="ic_prev_job">Poprzednia praca <span class="req">*</span></label>
+                            <input type="text" id="ic_prev_job" class="form-input" placeholder="np. Mechanik, Bezrobotny" required>
+                        </div>
+
                         <div class="form-group full-width">
-                            <label class="form-label" for="ic_story">Krótka historia / tło fabularne postaci <span class="req">*</span></label>
-                            <textarea id="ic_story" class="form-textarea" placeholder="Skąd pochodzi postać, jakie ma wykształcenie, dlaczego postanowiła podjąć pracę w pogotowiu ratunkowym..." minlength="50" required></textarea>
+                            <label class="form-label">Czy posiadasz zaświadczenie o niekaralności? Jeśli nie — za co byłeś/aś karany/a <span class="req">*</span></label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" name="criminal" id="criminal_yes" value="Tak">
+                                    <label for="criminal_yes">Tak</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" name="criminal" id="criminal_no" value="Nie">
+                                    <label for="criminal_no">Nie</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" name="criminal" id="criminal_other" value="Inne">
+                                    <label for="criminal_other">Inne</label>
+                                </div>
+                            </div>
+                            <div id="criminal_other_field">
+                                <textarea id="criminal_other_text" class="form-textarea" placeholder="Opisz swoją sytuację..." style="margin-top:8px;"></textarea>
+                            </div>
                         </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label" for="ic_why_ems">Czemu akurat EMS? <span class="req">*</span></label>
+                            <textarea id="ic_why_ems" class="form-textarea" placeholder="Co przyciągnęło Cię do służb medycznych?" required></textarea>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label" for="ic_med_exp">Jakie jest twoje doświadczenie z medycyną? <span class="req">*</span></label>
+                            <textarea id="ic_med_exp" class="form-textarea" placeholder="Poprzednie frakcje medyczne, kursy, wiedza..." required></textarea>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label" for="ic_strengths">Jakie są twoje mocne i słabe strony, które mogą pomóc lub utrudnić funkcjonowanie w jednostce? <span class="req">*</span></label>
+                            <textarea id="ic_strengths" class="form-textarea" placeholder="Opisz swoje mocne i słabe strony..." required></textarea>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label" for="ic_motivation">List Motywacyjny <span class="req">*</span></label>
+                            <textarea id="ic_motivation" class="form-textarea" style="min-height:140px;" placeholder="Napisz dlaczego chcesz dołączyć do EMS, co wniesiesz do drużyny..." required></textarea>
+                        </div>
+
                     </div>
                 </div>
 
-                <!-- SEKCJA 3: WIEDZA MEDYCZNA -->
-                <div class="form-section">
-                    <div class="section-legend">
-                        <span class="legend-num">3</span>
-                        <span>Doświadczenie & Sytuacje Medyczne</span>
-                    </div>
-                    <div class="form-grid">
-                        <div class="form-group full-width">
-                            <label class="form-label" for="med_exp">Doświadczenie w EMS / SAMC na serwerach RP <span class="req">*</span></label>
-                            <textarea id="med_exp" class="form-textarea" placeholder="W jakich frakcjach medycznych służyłeś, jakie stopnie osiągnąłeś i na jakich serwerach? Jeśli brak, napisz 'Brak, szybko się uczę'..." required></textarea>
-                        </div>
-                        <div class="form-group full-width">
-                            <label class="form-label" for="med_rko">Opisz procedurę RKO (Resuscytacja krążeniowo-oddechowa) <span class="req">*</span></label>
-                            <textarea id="med_rko" class="form-textarea" placeholder="Krok po kroku: jak oceniasz przytomność, oddech, ile uciśnięć klatki piersiowej i wdechów ratowniczych wykonujesz..." required></textarea>
-                        </div>
-                        <div class="form-group full-width">
-                            <label class="form-label" for="med_why">Dlaczego właśnie Ty powinieneś zasilić szeregi EMS? <span class="req">*</span></label>
-                            <textarea id="med_why" class="form-textarea" placeholder="Twoje mocne strony, zaangażowanie, co wniesiesz do frakcji..." minlength="30" required></textarea>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- OŚWIADCZENIE -->
-                <div class="form-section" style="border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 20px;">
+                <!-- Oświadczenie -->
+                <div class="form-section" style="border-top:1px solid var(--border); padding-top:20px;">
                     <label class="form-checkbox-label">
                         <input type="checkbox" id="accept_rules" required>
-                        <span>Oświadczam, że zapoznałem/am się z regulaminem, a podane w formularzu dane są prawdziwe. Rozumiem, że troll-podania skutkują blokadą.</span>
+                        <span>Oświadczam, że podane dane są prawdziwe i zapoznałem/am się z regulaminem. Troll-podania skutkują blokadą.</span>
                     </label>
                 </div>
 
-                <div id="submit-error" class="alert alert-danger" style="display: none;"></div>
+                <div id="submit-error" class="alert alert-danger" style="display:none;"></div>
 
-                <div style="display: flex; justify-content: flex-end; gap: 16px; margin-top: 24px;">
+                <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
                     <a href="index.html" class="btn btn-secondary">Anuluj</a>
                     <button type="submit" id="btn-submit-form" class="btn btn-primary btn-large">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                         Wyślij podanie
                     </button>
                 </div>
+
             </form>
         </div>
     </main>
 
     <!-- Footer -->
     <footer class="footer">
-        <p>&copy; 2026 Emergency Medical Services. Wszystkie prawa zastrzeżone.</p>
+        <p>© 2026 <a href="https://ggone.pl/" style="color:var(--text-muted);">ggone.pl</a> · Wszelkie prawa zastrzeżone</p>
     </footer>
 
-    <!-- Firebase SDK (Compat) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
@@ -180,10 +284,18 @@
     <script src="js/firebase-app.js"></script>
 
     <script>
+        // Pokaż/ukryj pole "Inne" przy zaświadczeniu
+        document.querySelectorAll('input[name="criminal"]').forEach(r => {
+            r.addEventListener('change', () => {
+                const otherField = document.getElementById('criminal_other_field');
+                otherField.style.display = r.value === 'Inne' && r.checked ? 'block' : 'none';
+            });
+        });
+
         window.addEventListener('DOMContentLoaded', async () => {
             const isAuth = Auth.isLoggedIn();
             const unauthView = document.getElementById('unauthorized-view');
-            const formView = document.getElementById('application-form-container');
+            const formView   = document.getElementById('application-form-container');
 
             if (!isAuth) {
                 unauthView.style.display = 'block';
@@ -193,60 +305,79 @@
             const user = Auth.getUser();
             formView.style.display = 'block';
 
-            // Ustaw dane w bannerze
+            // Banner
             document.getElementById('candidate-avatar').src = user.avatar;
             document.getElementById('candidate-name').textContent = user.global_name || user.username;
             document.getElementById('candidate-id').textContent = user.id;
 
-            // Sprawdź czy użytkownik ma już podanie
+            // Auto-fill Discord fields
+            document.getElementById('ooc_discord_name').value = user.username || '';
+            document.getElementById('ooc_discord_id').value = user.id || '';
+
+            // Sprawdź aktywne podanie
             try {
                 const existing = await Database.getUserApplication(user.id);
                 if (existing && existing.status === 'pending') {
                     formView.innerHTML = `
                         <div class="status-card">
-                            <div class="status-badge-lg status-pending">
-                                🟡 Podanie w trakcie rozpatrywania
-                            </div>
-                            <h2 style="font-size: 1.8rem; margin-bottom: 12px;">Masz już aktywne podanie!</h2>
-                            <p style="color: var(--text-muted); max-width: 550px; margin: 0 auto 30px;">
-                                Złożyłeś już podanie do EMS. Twoja aplikacja oczekuje na weryfikację przez Dyrekcję. Możesz śledzić jej status w czasie rzeczywistym.
+                            <div class="status-badge-lg status-pending">🟡 Podanie w trakcie rozpatrywania</div>
+                            <h2 style="font-size:1.4rem;margin-bottom:10px;">Masz już aktywne podanie!</h2>
+                            <p style="color:var(--text-muted);max-width:500px;margin:0 auto 28px;font-size:0.9rem;">
+                                Twoja aplikacja oczekuje na weryfikację przez Dyrekcję EMS. Możesz śledzić jej status na bieżąco.
                             </p>
-                            <a href="status.html" class="btn btn-primary btn-large">Przejdź do statusu podania</a>
-                        </div>
-                    `;
+                            <a href="status.html" class="btn btn-primary btn-large">Przejdź do statusu</a>
+                        </div>`;
                     return;
                 }
-            } catch (e) {
-                console.error(e);
-            }
+            } catch (e) { console.error(e); }
 
-            // Obsługa wysłania formularza
-            const form = document.getElementById('recruitment-form');
+            // Submit
+            const form      = document.getElementById('recruitment-form');
             const submitBtn = document.getElementById('btn-submit-form');
-            const errorAlert = document.getElementById('submit-error');
+            const errorAlert= document.getElementById('submit-error');
 
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 errorAlert.style.display = 'none';
+
+                // Walidacja ratingów
+                const rpRating  = document.querySelector('input[name="rp_rating"]:checked');
+                const medRating = document.querySelector('input[name="med_rating"]:checked');
+                const criminal  = document.querySelector('input[name="criminal"]:checked');
+
+                if (!rpRating)  { showError('Oceń swoje umiejętności RP (1-10).'); return; }
+                if (!medRating) { showError('Oceń swoją wiedzę medyczną (1-10).'); return; }
+                if (!criminal)  { showError('Odpowiedz na pytanie o zaświadczenie o niekaralności.'); return; }
+
+                const criminalValue = criminal.value === 'Inne'
+                    ? ('Inne: ' + (document.getElementById('criminal_other_text').value.trim() || '—'))
+                    : criminal.value;
+
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = `<span>Wysyłanie...</span>`;
+                submitBtn.innerHTML = '<span>Wysyłanie...</span>';
 
                 const formData = {
-                    userId: user.id,
-                    username: user.username,
-                    globalName: user.global_name || user.username,
-                    avatar: user.avatar,
-                    oocName: document.getElementById('ooc_name').value.trim(),
-                    oocAge: parseInt(document.getElementById('ooc_age').value, 10),
-                    oocMic: document.getElementById('ooc_mic').value,
-                    oocTime: document.getElementById('ooc_time').value.trim(),
-                    oocAbout: document.getElementById('ooc_about').value.trim(),
-                    icName: document.getElementById('ic_name').value.trim(),
-                    icAge: parseInt(document.getElementById('ic_age').value, 10),
-                    icStory: document.getElementById('ic_story').value.trim(),
-                    medExp: document.getElementById('med_exp').value.trim(),
-                    medRko: document.getElementById('med_rko').value.trim(),
-                    medWhy: document.getElementById('med_why').value.trim()
+                    userId:            user.id,
+                    username:          user.username,
+                    globalName:        user.global_name || user.username,
+                    avatar:            user.avatar,
+                    // OOC
+                    oocDiscordName:    document.getElementById('ooc_discord_name').value.trim(),
+                    oocDiscordId:      document.getElementById('ooc_discord_id').value.trim(),
+                    oocAge:            parseInt(document.getElementById('ooc_age').value, 10),
+                    oocRpRating:       rpRating.value,
+                    oocMedRating:      medRating.value,
+                    // IC
+                    icName:            document.getElementById('ic_name').value.trim(),
+                    icPn:              document.getElementById('ic_pn').value.trim(),
+                    icDob:             document.getElementById('ic_dob').value,
+                    icPhone:           document.getElementById('ic_phone').value.trim(),
+                    icPrevJob:         document.getElementById('ic_prev_job').value.trim(),
+                    icCriminal:        criminalValue,
+                    icWhyEms:          document.getElementById('ic_why_ems').value.trim(),
+                    icMedExp:          document.getElementById('ic_med_exp').value.trim(),
+                    icStrengths:       document.getElementById('ic_strengths').value.trim(),
+                    icMotivation:      document.getElementById('ic_motivation').value.trim(),
                 };
 
                 try {
@@ -254,12 +385,17 @@
                     window.location.href = 'status.html?submitted=true';
                 } catch (err) {
                     console.error('Błąd:', err);
-                    errorAlert.textContent = 'Wystąpił błąd podczas wysyłania podania: ' + (err.message || 'Spróbuj ponownie.');
-                    errorAlert.style.display = 'block';
+                    showError('Błąd podczas wysyłania: ' + (err.message || 'Spróbuj ponownie.'));
                     submitBtn.disabled = false;
-                    submitBtn.innerHTML = `Wyślij podanie`;
+                    submitBtn.innerHTML = 'Wyślij podanie';
                 }
             });
+
+            function showError(msg) {
+                errorAlert.textContent = msg;
+                errorAlert.style.display = 'flex';
+                errorAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         });
     </script>
 </body>

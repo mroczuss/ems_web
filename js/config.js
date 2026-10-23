@@ -10,7 +10,7 @@ const CONFIG = {
     // Podczas testów lokalnych: "http://localhost:5500/index.html" (lub "http://127.0.0.1:5500/index.html")
     // Na GitHub Pages: "https://twoj-login.github.io/nazwa-repo/index.html"
     // PAMIĘTAJ: Musisz dodać ten sam adres w Discord Developer Portal -> OAuth2 -> Redirects!
-    DISCORD_REDIRECT_URI: "https://ems.ggone.pl/",
+    DISCORD_REDIRECT_URI: "https://ems.ggone.pl/index.html",
 
     // ----------------------------------------------------
     // 2. FIREBASE CONFIG (Darmowy plan Spark)
