@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status Twojego Podania – EMS Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">
+                <img src="https://cdn.discordapp.com/attachments/1562865685892300807/1563229746907582514/fe893a14-58b1-4fd5-a384-e473c31a2f30.png?ex=6adcdea7&is=6adb8d27&hm=33d013d265277b126371acc8de5268392aa396c3f26413c2d23929b20d987191&" alt="EMS Logo" class="nav-logo" onerror="this.src='https://dummyimage.com/100x100/e74c3c/ffffff&text=EMS'">
+                <span>EMS Panel</span>
+                <span class="nav-badge">Rekrutacja</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link">Strona Główna</a></li>
+                <li><a href="podanie.html" class="nav-link">Złóż Podanie</a></li>
+                <li><a href="status.html" class="nav-link active">Status Podania</a></li>
+            </ul>
+            <div id="nav-user-container">
+                <!-- Wstrzykiwane przez auth.js -->
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Niezalogowany -->
+        <div id="unauth-box" class="glass-card text-center" style="display: none; text-align: center; padding: 60px 20px;">
+            <div style="font-size: 3rem; margin-bottom: 16px;">🔑</div>
+            <h2 style="font-size: 1.8rem; margin-bottom: 12px;">Zaloguj się, aby sprawdzić status</h2>
+            <p style="color: var(--text-muted); max-width: 500px; margin: 0 auto 30px;">
+                Po zalogowaniu kontem Discord system automatycznie odnajdzie Twoje podanie i wyświetli aktualną decyzję Zarządu.
+            </p>
+            <button class="btn btn-discord btn-large" onclick="Auth.login()">
+                <svg width="22" height="18" viewBox="0 0 127.14 96.36" fill="currentColor">
+                    <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.86,53,48.83,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/>
+                </svg>
+                Zaloguj przez Discord
+            </button>
+        </div>
+
+        <!-- Stan ładowania -->
+        <div id="loading-box" class="glass-card text-center" style="text-align: center; padding: 60px 20px;">
+            <div style="font-size: 2rem; margin-bottom: 12px;">⏳</div>
+            <p style="color: var(--text-muted);">Pobieranie statusu Twojej aplikacji...</p>
+        </div>
+
+        <!-- Główny kontener statusu -->
+        <div id="status-container" style="display: none;">
+            <!-- Wstrzykiwane dynamicznie przez JS -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 Emergency Medical Services. Wszystkie prawa zastrzeżone.</p>
+    </footer>
+
+    <!-- Firebase SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <!-- Custom Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/firebase-app.js"></script>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const isAuth = Auth.isLoggedIn();
+            const unauthBox = document.getElementById('unauth-box');
+            const loadingBox = document.getElementById('loading-box');
+            const statusContainer = document.getElementById('status-container');
+
+            if (!isAuth) {
+                loadingBox.style.display = 'none';
+                unauthBox.style.display = 'block';
+                return;
+            }
+
+            const user = Auth.getUser();
+
+            // Subskrybuj podanie w czasie rzeczywistym
+            Database.subscribeToApplication(user.id, (app) => {
+                loadingBox.style.display = 'none';
+                statusContainer.style.display = 'block';
+
+                if (!app) {
+                    statusContainer.innerHTML = `
+                        <div class="glass-card text-center" style="text-align: center; padding: 60px 20px;">
+                            <div style="font-size: 3rem; margin-bottom: 16px;">📑</div>
+                            <h2 style="font-size: 1.8rem; margin-bottom: 12px;">Brak aktywnego podania</h2>
+                            <p style="color: var(--text-muted); max-width: 500px; margin: 0 auto 30px;">
+                                Wygląda na to, że nie złożyłeś jeszcze podania do Emergency Medical Services. Formularz jest otwarty!
+                            </p>
+                            <a href="podanie.html" class="btn btn-primary btn-large">Wypełnij formularz rekrutacyjny</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Renderowanie w zależności od statusu
+                let statusBadge = '';
+                let statusTitle = '';
+                let statusDesc = '';
+
+                if (app.status === 'accepted') {
+                    statusBadge = `<div class="status-badge-lg status-accepted">✔ Zaakceptowane</div>`;
+                    statusTitle = `🎉 Gratulacje! Twoje podanie zostało przyjęte`;
+                    statusDesc = `Dyrekcja EMS pozytywnie rozpatrzyła Twój formularz. Otrzymałeś odpowiednie role na serwerze Discord. Sprawdź swoje wiadomości prywatne (DM) od bota w sprawie terminu rozmowy rekrutacyjnej i szkolenia w Akademii.`;
+                } else if (app.status === 'rejected') {
+                    statusBadge = `<div class="status-badge-lg status-rejected">✖ Odrzucone</div>`;
+                    statusTitle = `Niestety, Twoje podanie zostało odrzucone`;
+                    statusDesc = `Decyzją Zarządu Twoja aplikacja nie została zaakceptowana. Możesz spróbować ponownie po upływie 14 dni od momentu decyzji.`;
+                } else {
+                    statusBadge = `<div class="status-badge-lg status-pending">⏳ Oczekuje na rozpatrzenie</div>`;
+                    statusTitle = `Twoje podanie jest w trakcie weryfikacji`;
+                    statusDesc = `Twoja aplikacja została zarejestrowana i oczekuje na ocenę przez Zarząd EMS. Ta strona aktualizuje się na bieżąco – nie musisz jej odświeżać!`;
+                }
+
+                const dateStr = app.submittedAt?.toDate 
+                    ? app.submittedAt.toDate().toLocaleString('pl-PL') 
+                    : (app.submittedAt ? new Date(app.submittedAt).toLocaleString('pl-PL') : 'Przed chwilą');
+
+                statusContainer.innerHTML = `
+                    <div class="glass-card status-card">
+                        ${statusBadge}
+                        <h2 style="font-size: 2rem; margin-bottom: 14px;">${statusTitle}</h2>
+                        <p style="color: var(--text-muted); max-width: 650px; margin: 0 auto 30px; font-size: 1.05rem;">
+                            ${statusDesc}
+                        </p>
+
+                        ${app.reviewerNote ? `
+                            <div class="alert alert-warning" style="max-width: 650px; margin: 0 auto 30px; text-align: left;">
+                                <strong>Notatka od weryfikatora:</strong> ${app.reviewerNote}
+                            </div>
+                        ` : ''}
+
+                        <div class="status-details-grid">
+                            <div class="status-detail-item">
+                                <div class="status-detail-label">Postać IC</div>
+                                <div class="status-detail-val">${app.icName || 'Brak danych'}</div>
+                            </div>
+                            <div class="status-detail-item">
+                                <div class="status-detail-label">Wiek Postaci</div>
+                                <div class="status-detail-val">${app.icAge ? app.icAge + ' lat' : 'Brak danych'}</div>
+                            </div>
+                            <div class="status-detail-item">
+                                <div class="status-detail-label">Konto Discord</div>
+                                <div class="status-detail-val">${app.globalName || app.username}</div>
+                            </div>
+                            <div class="status-detail-item">
+                                <div class="status-detail-label">Data złożenia</div>
+                                <div class="status-detail-val">${dateStr}</div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: center; gap: 16px; margin-top: 20px;">
+                            <a href="index.html" class="btn btn-secondary">Wróć na stronę główną</a>
+                            ${app.status === 'rejected' ? `<a href="podanie.html" class="btn btn-primary">Złóż nowe podanie</a>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+        });
+    </script>
+</body>
+
+</html>

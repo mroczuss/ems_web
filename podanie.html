@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formularz Podania – EMS Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">
+                <img src="https://cdn.discordapp.com/attachments/1562865685892300807/1563229746907582514/fe893a14-58b1-4fd5-a384-e473c31a2f30.png?ex=6adcdea7&is=6adb8d27&hm=33d013d265277b126371acc8de5268392aa396c3f26413c2d23929b20d987191&" alt="EMS Logo" class="nav-logo" onerror="this.src='https://dummyimage.com/100x100/e74c3c/ffffff&text=EMS'">
+                <span>EMS Panel</span>
+                <span class="nav-badge">Rekrutacja</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link">Strona Główna</a></li>
+                <li><a href="podanie.html" class="nav-link active">Złóż Podanie</a></li>
+                <li><a href="status.html" class="nav-link">Status Podania</a></li>
+            </ul>
+            <div id="nav-user-container">
+                <!-- Wstrzykiwane przez auth.js -->
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Widok dla niezalogowanych -->
+        <div id="unauthorized-view" class="glass-card text-center" style="display: none; text-align: center; padding: 60px 20px;">
+            <div style="font-size: 3rem; margin-bottom: 16px;">🔒</div>
+            <h2 style="font-size: 1.8rem; margin-bottom: 12px;">Wymagane logowanie Discord</h2>
+            <p style="color: var(--text-muted); max-width: 500px; margin: 0 auto 30px;">
+                Aby złożyć formularz rekrutacyjny, musisz najpierw połączyć swoje konto Discord. Dzięki temu Zarząd będzie mógł bezpośrednio zweryfikować Twój profil i powiadomić Cię o wyniku.
+            </p>
+            <button class="btn btn-discord btn-large" onclick="Auth.login()">
+                <svg width="22" height="18" viewBox="0 0 127.14 96.36" fill="currentColor">
+                    <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.86,53,48.83,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/>
+                </svg>
+                Zaloguj przez Discord
+            </button>
+        </div>
+
+        <!-- Formularz dla zalogowanych -->
+        <div id="application-form-container" class="glass-card" style="display: none;">
+            <div class="form-header">
+                <h2>📝 Formularz Aplikacyjny do EMS</h2>
+                <p>Wypełnij rzetelnie wszystkie poniższe pola. Treściwe i dokładne podania mają największą szansę na pozytywne rozpatrzenie.</p>
+            </div>
+
+            <!-- Podgląd konta Discord -->
+            <div class="alert alert-info" id="user-info-banner">
+                <img id="candidate-avatar" src="" alt="Avatar" style="width: 38px; height: 38px; border-radius: 50%;">
+                <div>
+                    Aplikujesz jako: <strong id="candidate-name"></strong> (Discord ID: <code id="candidate-id" style="background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px;"></code>)
+                </div>
+            </div>
+
+            <form id="recruitment-form">
+                <!-- SEKCJA 1: OOC -->
+                <div class="form-section">
+                    <div class="section-legend">
+                        <span class="legend-num">1</span>
+                        <span>Informacje Out Of Character (OOC)</span>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="ooc_name">Twoje Imię <span class="req">*</span></label>
+                            <input type="text" id="ooc_name" class="form-input" placeholder="np. Maciej" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="ooc_age">Wiek OOC <span class="req">*</span></label>
+                            <input type="number" id="ooc_age" class="form-input" placeholder="np. 17" min="14" max="99" required>
+                            <span class="form-hint">Wymagane minimum 15 lat (lub ukończone w najbliższym czasie).</span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="ooc_mic">Mikrofon i mutacja <span class="req">*</span></label>
+                            <select id="ooc_mic" class="form-select" required>
+                                <option value="" disabled selected>Wybierz status...</option>
+                                <option value="Tak, w pełni sprawny mikrofon i mutacja">Tak, sprawny mikrofon i pełna mutacja</option>
+                                <option value="Mikrofon sprawny, mutacja w trakcie">Mikrofon sprawny, mutacja w trakcie</option>
+                                <option value="Brak mutacji / problemy ze sprzętem">Brak mutacji / słaby sprzęt</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="ooc_time">Dostępność czasowa tygodniowo <span class="req">*</span></label>
+                            <input type="text" id="ooc_time" class="form-input" placeholder="np. 15-20 godzin" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="form-label" for="ooc_about">Napisz coś o sobie <span class="req">*</span></label>
+                            <textarea id="ooc_about" class="form-textarea" placeholder="Opisz swoje zainteresowania, czym się zajmujesz, jaki masz charakter (min. 40 słów)..." minlength="40" required></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEKCJA 2: IC -->
+                <div class="form-section">
+                    <div class="section-legend">
+                        <span class="legend-num">2</span>
+                        <span>Dane Postaci In Character (IC)</span>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="ic_name">Imię i Nazwisko postaci <span class="req">*</span></label>
+                            <input type="text" id="ic_name" class="form-input" placeholder="np. John Kowalsky" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="ic_age">Wiek postaci <span class="req">*</span></label>
+                            <input type="number" id="ic_age" class="form-input" placeholder="np. 28" min="18" max="75" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="form-label" for="ic_story">Krótka historia / tło fabularne postaci <span class="req">*</span></label>
+                            <textarea id="ic_story" class="form-textarea" placeholder="Skąd pochodzi postać, jakie ma wykształcenie, dlaczego postanowiła podjąć pracę w pogotowiu ratunkowym..." minlength="50" required></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEKCJA 3: WIEDZA MEDYCZNA -->
+                <div class="form-section">
+                    <div class="section-legend">
+                        <span class="legend-num">3</span>
+                        <span>Doświadczenie & Sytuacje Medyczne</span>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label class="form-label" for="med_exp">Doświadczenie w EMS / SAMC na serwerach RP <span class="req">*</span></label>
+                            <textarea id="med_exp" class="form-textarea" placeholder="W jakich frakcjach medycznych służyłeś, jakie stopnie osiągnąłeś i na jakich serwerach? Jeśli brak, napisz 'Brak, szybko się uczę'..." required></textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="form-label" for="med_rko">Opisz procedurę RKO (Resuscytacja krążeniowo-oddechowa) <span class="req">*</span></label>
+                            <textarea id="med_rko" class="form-textarea" placeholder="Krok po kroku: jak oceniasz przytomność, oddech, ile uciśnięć klatki piersiowej i wdechów ratowniczych wykonujesz..." required></textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="form-label" for="med_why">Dlaczego właśnie Ty powinieneś zasilić szeregi EMS? <span class="req">*</span></label>
+                            <textarea id="med_why" class="form-textarea" placeholder="Twoje mocne strony, zaangażowanie, co wniesiesz do frakcji..." minlength="30" required></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OŚWIADCZENIE -->
+                <div class="form-section" style="border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 20px;">
+                    <label class="form-checkbox-label">
+                        <input type="checkbox" id="accept_rules" required>
+                        <span>Oświadczam, że zapoznałem/am się z regulaminem, a podane w formularzu dane są prawdziwe. Rozumiem, że troll-podania skutkują blokadą.</span>
+                    </label>
+                </div>
+
+                <div id="submit-error" class="alert alert-danger" style="display: none;"></div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 16px; margin-top: 24px;">
+                    <a href="index.html" class="btn btn-secondary">Anuluj</a>
+                    <button type="submit" id="btn-submit-form" class="btn btn-primary btn-large">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        Wyślij podanie
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 Emergency Medical Services. Wszystkie prawa zastrzeżone.</p>
+    </footer>
+
+    <!-- Firebase SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <!-- Custom Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/firebase-app.js"></script>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', async () => {
+            const isAuth = Auth.isLoggedIn();
+            const unauthView = document.getElementById('unauthorized-view');
+            const formView = document.getElementById('application-form-container');
+
+            if (!isAuth) {
+                unauthView.style.display = 'block';
+                return;
+            }
+
+            const user = Auth.getUser();
+            formView.style.display = 'block';
+
+            // Ustaw dane w bannerze
+            document.getElementById('candidate-avatar').src = user.avatar;
+            document.getElementById('candidate-name').textContent = user.global_name || user.username;
+            document.getElementById('candidate-id').textContent = user.id;
+
+            // Sprawdź czy użytkownik ma już podanie
+            try {
+                const existing = await Database.getUserApplication(user.id);
+                if (existing && existing.status === 'pending') {
+                    formView.innerHTML = `
+                        <div class="status-card">
+                            <div class="status-badge-lg status-pending">
+                                🟡 Podanie w trakcie rozpatrywania
+                            </div>
+                            <h2 style="font-size: 1.8rem; margin-bottom: 12px;">Masz już aktywne podanie!</h2>
+                            <p style="color: var(--text-muted); max-width: 550px; margin: 0 auto 30px;">
+                                Złożyłeś już podanie do EMS. Twoja aplikacja oczekuje na weryfikację przez Dyrekcję. Możesz śledzić jej status w czasie rzeczywistym.
+                            </p>
+                            <a href="status.html" class="btn btn-primary btn-large">Przejdź do statusu podania</a>
+                        </div>
+                    `;
+                    return;
+                }
+            } catch (e) {
+                console.error(e);
+            }
+
+            // Obsługa wysłania formularza
+            const form = document.getElementById('recruitment-form');
+            const submitBtn = document.getElementById('btn-submit-form');
+            const errorAlert = document.getElementById('submit-error');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                errorAlert.style.display = 'none';
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `<span>Wysyłanie...</span>`;
+
+                const formData = {
+                    userId: user.id,
+                    username: user.username,
+                    globalName: user.global_name || user.username,
+                    avatar: user.avatar,
+                    oocName: document.getElementById('ooc_name').value.trim(),
+                    oocAge: parseInt(document.getElementById('ooc_age').value, 10),
+                    oocMic: document.getElementById('ooc_mic').value,
+                    oocTime: document.getElementById('ooc_time').value.trim(),
+                    oocAbout: document.getElementById('ooc_about').value.trim(),
+                    icName: document.getElementById('ic_name').value.trim(),
+                    icAge: parseInt(document.getElementById('ic_age').value, 10),
+                    icStory: document.getElementById('ic_story').value.trim(),
+                    medExp: document.getElementById('med_exp').value.trim(),
+                    medRko: document.getElementById('med_rko').value.trim(),
+                    medWhy: document.getElementById('med_why').value.trim()
+                };
+
+                try {
+                    await Database.submitApplication(formData);
+                    window.location.href = 'status.html?submitted=true';
+                } catch (err) {
+                    console.error('Błąd:', err);
+                    errorAlert.textContent = 'Wystąpił błąd podczas wysyłania podania: ' + (err.message || 'Spróbuj ponownie.');
+                    errorAlert.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = `Wyślij podanie`;
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
